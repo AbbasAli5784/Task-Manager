@@ -9,34 +9,39 @@ import {
 } from "react-native";
 import useTasks from "../hooks/useTasks";
 
+// This component displays a single task and allows editing, deleting, and marking it complete
 export default function TaskItem({ task }) {
-  const { dispatch } = useTasks();
-  const [isEditing, setIsEditing] = useState(false);
-  const [newTitle, setNewTitle] = useState(task.title);
+  const { dispatch } = useTasks(); // Get the dispatch function from global task context
+  const [isEditing, setIsEditing] = useState(false); // Whether we're currently editing this task
+  const [newTitle, setNewTitle] = useState(task.title); // Local state to hold edited task title
 
+  // Toggle the completed status of the task
   const toggleComplete = () => {
     dispatch({ type: "TOGGLE_TASK", payload: task.id });
   };
 
+  // Delete the task
   const handleDelete = () => {
     dispatch({ type: "DELETE_TASK", payload: task.id });
   };
 
+  // Also toggles completion (used for 'Complete' button)
   const handleComplete = () => {
     dispatch({ type: "TOGGLE_TASK", payload: task.id });
   };
 
+  // Save changes to the task title
   const handleSave = () => {
     dispatch({
       type: "EDIT_TASK",
       payload: { ...task, title: newTitle },
     });
-    setIsEditing(false);
+    setIsEditing(false); // Exit editing mode
   };
 
   return (
     <View style={styles.container}>
-      {/* Optional: category color strip */}
+      {/* Colored strip to show category (work/personal/etc.) */}
       <View
         style={[
           styles.colorBar,
@@ -44,9 +49,10 @@ export default function TaskItem({ task }) {
         ]}
       />
 
-      {/* Task Content */}
+      {/* Main task content */}
       <View style={styles.content}>
         {isEditing ? (
+          // Show input and save button if editing
           <>
             <TextInput
               style={styles.input}
@@ -56,6 +62,7 @@ export default function TaskItem({ task }) {
             <Button title="Save" onPress={handleSave} />
           </>
         ) : (
+          // Show task title and action buttons
           <>
             <TouchableOpacity onPress={toggleComplete}>
               <Text style={[styles.text, task.completed && styles.completed]}>
@@ -75,7 +82,7 @@ export default function TaskItem({ task }) {
   );
 }
 
-// Simple color picker for category
+// Returns a color based on the task's category
 function getCategoryColor(category) {
   switch (category) {
     case "work":
@@ -87,6 +94,7 @@ function getCategoryColor(category) {
   }
 }
 
+// Styles for the component
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",

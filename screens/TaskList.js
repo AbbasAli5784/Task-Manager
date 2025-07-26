@@ -12,38 +12,41 @@ import uuid from "react-native-uuid";
 import useTasks from "../hooks/useTasks";
 import TaskItem from "../components/TaskItem";
 
+// This is the main screen where tasks are created, filtered, and displayed
 export default function TaskList() {
-  const { tasks, dispatch } = useTasks();
-  const [text, setText] = useState("");
-  const [filter, setFilter] = useState("all"); // all | active | completed
+  const { tasks, dispatch } = useTasks(); // Get task state and dispatch function
+  const [text, setText] = useState(""); // Holds input for new task
+  const [filter, setFilter] = useState("all"); // Task filter: all, active, completed
 
-  console.log("FROM COMPONENT: ", tasks);
+  console.log("FROM COMPONENT: ", tasks); // For debugging
 
+  // Filter tasks based on selected view
   const filteredTasks = tasks.filter((task) => {
     if (filter === "active") return !task.completed;
     if (filter === "completed") return task.completed;
     return true;
   });
 
+  // Create a new task and add it to the list
   const handleAddTask = () => {
     if (text.trim() === "") return;
     dispatch({
       type: "ADD_TASK",
       payload: {
-        id: uuid.v4(),
+        id: uuid.v4(), // generate unique ID
         title: text,
         completed: false,
-        category: "default", // you can expand this
+        category: "default", // default category for now
       },
     });
-    setText("");
+    setText(""); // Clear input
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Task Tracker</Text>
 
-      {/* Input Field */}
+      {/* Input field + Add button */}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -54,7 +57,7 @@ export default function TaskList() {
         <Button title="Add" onPress={handleAddTask} />
       </View>
 
-      {/* Filter Buttons */}
+      {/* Filter buttons (All / Active / Completed) */}
       <View style={styles.filters}>
         {["all", "active", "completed"].map((type) => (
           <TouchableOpacity key={type} onPress={() => setFilter(type)}>
@@ -70,7 +73,7 @@ export default function TaskList() {
         ))}
       </View>
 
-      {/* Task List */}
+      {/* Render task list */}
       <FlatList
         data={filteredTasks}
         keyExtractor={(item) => item.id}
@@ -80,6 +83,7 @@ export default function TaskList() {
   );
 }
 
+// Styling for the screen
 const styles = StyleSheet.create({
   container: {
     paddingTop: 50,
